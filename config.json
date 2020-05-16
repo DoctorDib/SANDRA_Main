@@ -1,0 +1,27 @@
+{
+    "bot_name": "Sandra",
+
+    "owner": {
+        "gender": "Male",
+        "title": "Mr",
+        "first_name": "James",
+        "last_name": {
+            "original": "Dibnah",
+            "pronounce": "Dib nah"
+        }
+    },
+    
+    "bot_voice": {
+        "voice_id": 2,
+        "volumne": 1,
+        "rate": 200
+    },
+
+    "web_server": {
+        "port": 8000
+    },
+
+    "log": {
+        "max_limit": 10
+    }
+}
