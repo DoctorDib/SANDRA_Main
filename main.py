@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from helper import tasks
+from Naked.toolshed.shell import execute_js, muterun_js
 
 import array
 import sys
@@ -7,7 +8,6 @@ import socketserver
 import socket
 import json
 import config
-import web_server
 
 import asyncio
 import websockets
@@ -21,7 +21,7 @@ import logging
 global server
 global info_server
 
-HOST = 'localhost'
+HOST = '192.168.0.14'
 PORT = 65432
 WEB_PORT = 8765
 INFO_PORT = 65433
@@ -157,7 +157,13 @@ class Socket_Server(threading.Thread):
 class Web_Server(threading.Thread):
     def run(self):
         print("Starting up webserver")
-        web_server.start()
+        result = execute_js('./website/server.js')
+        if result:
+            print("Done website")
+            # JavaScript is successfully executed
+        else:
+            print("failed")
+            # JavaScript is failed
 
 def create_response(type, content):
     return json.dumps({

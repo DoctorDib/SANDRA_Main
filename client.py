@@ -30,7 +30,7 @@ else:
 
 logger = []
 
-HOST = "localhost"
+HOST = "192.168.0.14"
 PORT = 65432
 INFO_PORT = 65433
 
