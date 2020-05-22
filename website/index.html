@@ -155,7 +155,7 @@
 
         const connect = () => {
             console.log("Attempting to connect");
-            websocket = new WebSocket("ws://192.168.0.14:8765/");
+            websocket = new WebSocket(`ws://${window.location.hostname}:8765/`);
             console.log("Connected...");
             
             const interval = setInterval(() => {
