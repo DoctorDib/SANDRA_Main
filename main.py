@@ -29,7 +29,7 @@ if (os.name == 'nt'):
 else:
     from subprocess import check_output
     device = 'Pi'
-    HOST = check_output(['hostname', '-I']).split('\'')[1].split(' ')[0]
+    HOST = str(check_output(['hostname', '-I'])).split('\'')[1].split(' ')[0]
 
 PORT = 65432
 WEB_PORT = 8765
