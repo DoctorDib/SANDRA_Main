@@ -199,7 +199,7 @@ def read_socket_request(data):
         os.system ("git pull")
         os.system ("sudo reboot")
         
-    return 'error'
+    return ('error')
 
 async def listen(websocket, path):
     async for message in websocket:
