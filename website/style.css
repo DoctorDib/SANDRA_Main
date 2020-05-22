@@ -165,12 +165,11 @@ h1 {
 }
 
 .mainServerStatsParent {
-    padding: 20px;
+    padding: 15px;
     display: flex;
     flex-direction: row;
     justify-content: space-around;
     background-color: #1e1e1e;
-
 }
 
 .tooltip {
@@ -210,6 +209,16 @@ h1 {
     width: 35px;
     border-radius: 50%;
     display: inline-block;
+}
+
+.versionParent {
+    display: flex;
+    background-color: #1e1e1e;
+    padding: 10px;
+    padding-top: 0;
+    color: #484848;
+    text-align:center;
+    justify-content: center;
 }
 
 .active { background-color: green; }

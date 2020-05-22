@@ -52,7 +52,7 @@ TRAIN_DATA = [
 cl = NaiveBayesClassifier(TRAIN_DATA)
 
 ## saving
-f = open('recognition.pickle', 'wb')
+f = open('models/recognition.pickle', 'wb')
 pickle.dump(cl, f)
 
 f.close()

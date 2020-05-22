@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 from helper import tasks
 from Naked.toolshed.shell import execute_js, muterun_js
+from subprocess import check_output
 
+import os
 import array
 import sys
 import socketserver
@@ -21,7 +23,14 @@ import logging
 global server
 global info_server
 
-HOST = '192.168.0.14'
+if (os.name == 'nt'):
+    device = 'Windows'
+    HOST = socket.gethostbyname(socket.gethostname())
+else:
+    from subprocess import check_output
+    device = 'Pi'
+    HOST = check_output(['hostname', '-I']).split('\'')[1].split(' ')[0]
+
 PORT = 65432
 WEB_PORT = 8765
 INFO_PORT = 65433
@@ -32,8 +41,17 @@ heart_beat_timeout = 5 #seconds
 
 MASTER_STOP = False
 
+print("========================================")
+print("DEVICE IP: ", HOST)
+print("DEVICE: ", device)
+print("========================================")
+
 def setup():
     config.setup()
+
+    active_clients["server"] = {
+        "version": config.CONFIG["version"]
+    }
 
 def handle_input(address, json_content):
     global active_clients
@@ -110,7 +128,7 @@ class ClientHandler(asyncore.dispatcher):
 
     def handle_read(self):
         data = self.recv(1024).decode('utf-8')
-
+        
         # If client disconnects due to error
         if (not data):
             self.handle_close()
@@ -177,7 +195,10 @@ def read_socket_request(data):
 
     if (json_data['type'] == 'get-info'):
         return create_response('data_response', active_clients)
-
+    if (json_data['type'] == 'update-sandra' and device == 'Pi'):
+        os.system ("git pull")
+        os.system ("sudo reboot")
+        
     return 'error'
 
 async def listen(websocket, path):
@@ -268,7 +289,7 @@ class Information_Server(threading.Thread):
         info_server = Info_Server((HOST,INFO_PORT))    
         asyncore.loop()
 
-        
+
 if (__name__ == '__main__'):
     setup()
 

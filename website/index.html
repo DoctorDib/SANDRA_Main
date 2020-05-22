@@ -14,14 +14,23 @@
                     <section id="sidePanelContent"> <!-- INFORMATION GOES HERE --> </section>
                     <section id='connectionStatusParent'> 
                         
-                        
                         <section class="mainServerStatsParent">
                             <section class="tooltip">
                                 <img id="serverConnectionStatus" src="svgs/signs.svg" class="iconImg" />
                                 <span class="tooltiptext"> Connection to main server </span>
                             </section> 
+
+                            <section class="tooltip">
+                                <img id="serverConnectionStatus" src="svgs/refresh.svg" class="iconImg" onclick="updateServer()" />
+                                <span class="tooltiptext"> Update server and clients </span>
+                            </section> 
                         </section>
 
+                        <section class="versionParent"> 
+                            Version: <section id="version"> error </section> 
+                        </section>
+
+                        <!-- Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a> -->
                         <!-- <div>Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div> -->
                     </section>
                 </section>
@@ -43,7 +52,6 @@
     </body>
 
     <script type="text/javascript" charset="utf-8">
-
         let infoDisplayActive = false;
         let infoClient = '';
         let active_clients = {}
@@ -67,9 +75,15 @@
             active_clients = json_data;
             
             for (client in json_data) {
-                let element = document.getElementById(client);
-
                 data = json_data[client];
+                
+                if (client === "server") {
+                    let version = document.getElementById("version");
+                    version.textContent = data["version"];
+                    continue;
+                }
+
+                let element = document.getElementById(client);
 
                 if (!element) {
                     element_template(client, data);
@@ -192,6 +206,10 @@
             };
         }
 
+        const updateServer = () => {
+            websocket.send(JSON.stringify({'ID': 'Webserver', 'type': 'update-sandra'}));
+        }
+        
         let websocket = null;
 
         connect();
@@ -202,12 +220,8 @@
             try {
                 websocket.send(JSON.stringify({'ID': 'Webserver', 'type': 'get-info'}));
             } catch (error) {
-                console.log("Error connecting")
-                // Attempt to reconnect to server
-                //connect();
+                console.log("Error connecting");
             }
         }, 250);
-
-        
     </script>
 </html>

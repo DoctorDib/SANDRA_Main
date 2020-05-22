@@ -5,7 +5,7 @@ from tasks import greet_part_handler
 
 import pickle
 
-f = open('recognition.pickle', 'rb')
+f = open('models/recognition.pickle', 'rb')
 classifier = pickle.load(f)
 
 def ProcessTask(req, pro, input):

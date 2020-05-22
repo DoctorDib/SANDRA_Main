@@ -13,7 +13,7 @@ TEST_DATA = [
     "what is the current hour sandra"
 ]
 
-f = open('recognition.pickle', 'rb')
+f = open('models/recognition.pickle', 'rb')
 classifier = pickle.load(f)
 
 for val in TEST_DATA:
