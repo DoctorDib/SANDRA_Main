@@ -4,6 +4,7 @@ import os
 CONFIG = {}
 
 def setup():
-    with open(os.path.join(os.getcwd(), 'config.json')) as f:
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    with open(os.path.join(dir_path, 'config.json')) as f:
         global CONFIG
         CONFIG = json.load(f)

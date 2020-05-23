@@ -4,8 +4,10 @@ from tasks import request_handler
 from tasks import greet_part_handler
 
 import pickle
+import os
 
-f = open('models/recognition.pickle', 'rb')
+dir_path = os.path.dirname(os.path.realpath(__file__))
+f =open(os.path.join(dir_path, 'models/recognition.pickle', 'rb')
 classifier = pickle.load(f)
 
 def ProcessTask(req, pro, input):
