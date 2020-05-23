@@ -17,7 +17,9 @@ def get_ip(type):
         return str(check_output(['hostname', '-I'])).split('\'')[1].split(' ')[0]
 
 def update_system(currentVerison):
-    os.system('git pull')
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+
+    os.system('git -C ', dir_path, ' pull')
 
     config.setup()
     newVersion = config.CONFIG['version']
