@@ -1,17 +1,14 @@
 import socket
-import server
-import client
 import sys
 
-arg = False
-
 if (len(sys.argv) > 1):
+    print(sys.argv[1])
     if (sys.argv[1] == 'debug_server'):
-        server.start()
+        import server
+else :
+    device_name = socket.gethostname()
 
-device_name = socket.gethostname()
-
-if (device_name == "SANDRA_Server"):
-    server.start()
-else:
-    client.start()
+    if (device_name == "SANDRA_Server"):
+        import server
+    else:
+        import client

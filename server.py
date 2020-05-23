@@ -351,38 +351,37 @@ class Information_Server(threading.Thread):
         info_server = Info_Server((HOST,INFO_PORT))    
         asyncore.loop()
 
-def start():
-    setup()
+setup()
 
-    CLOSE_PROGRAM = False
+CLOSE_PROGRAM = False
 
-    try:
-        mythread = Socket_Server(name = "Socket-Server") 
-        mythread.setDaemon(True)
-        mythread.start()
+try:
+    mythread = Socket_Server(name = "Socket-Server") 
+    mythread.setDaemon(True)
+    mythread.start()
 
-        info_server_thread = Information_Server(name = "Information-Server") 
-        info_server_thread.setDaemon(True)
-        info_server_thread.start()
+    info_server_thread = Information_Server(name = "Information-Server") 
+    info_server_thread.setDaemon(True)
+    info_server_thread.start()
 
-        web_socket_thread = WebSocket_Server(name = "WebSocket-Server") 
-        web_socket_thread.setDaemon(True)
-        web_socket_thread.start()
+    web_socket_thread = WebSocket_Server(name = "WebSocket-Server") 
+    web_socket_thread.setDaemon(True)
+    web_socket_thread.start()
 
-        notif_server_thread = Notif_Socket_Server(name = "Notification-Server") 
-        notif_server_thread.setDaemon(True)
-        notif_server_thread.start()
+    notif_server_thread = Notif_Socket_Server(name = "Notification-Server") 
+    notif_server_thread.setDaemon(True)
+    notif_server_thread.start()
 
-        web_server_thread = Web_Server(name = "Website-Server") 
-        web_server_thread.setDaemon(True)
-        web_server_thread.start()
-        
-        while not CLOSE_PROGRAM:
-            if (CLOSE_PROGRAM):
-                break
+    web_server_thread = Web_Server(name = "Website-Server") 
+    web_server_thread.setDaemon(True)
+    web_server_thread.start()
+    
+    while not CLOSE_PROGRAM:
+        if (CLOSE_PROGRAM):
+            break
 
-    except KeyboardInterrupt:
-        CLOSE_PROGRAM = True
-        server.close()
-        info_server.close()
-        exit()
+except KeyboardInterrupt:
+    CLOSE_PROGRAM = True
+    server.close()
+    info_server.close()
+    exit()

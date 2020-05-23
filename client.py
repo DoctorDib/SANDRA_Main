@@ -211,34 +211,34 @@ def connect():
     notif_server_thread.start()
     info_socket.connect((HOST, INFO_PORT))  # connect to the server
 
-def start():
-    task_socket = socket.socket()  # instantiate
-    info_socket = socket.socket()  # instantiate
-    notif_socket = socket.socket()  # instantiate
 
-    task_server_thread = RunTaskServer(name = "Task-Server")
-    notif_server_thread = RunNotificationServer(name = "Notification-Server")
- 
-    try:
-        connect()
-        print ("New Device ID: ", device_key)
+task_socket = socket.socket()  # instantiate
+info_socket = socket.socket()  # instantiate
+notif_socket = socket.socket()  # instantiate
 
-    except socket.error:
-        # set connection status and recreate socket  
-        connected = False  
-        print( "connection lost... reconnecting" ) 
+task_server_thread = RunTaskServer(name = "Task-Server")
+notif_server_thread = RunNotificationServer(name = "Notification-Server")
 
-        while not connected:
-            # attempt to reconnect, otherwise sleep for 2 seconds  
-            try:  
-                connect()
-                connected = True  
-                print( "re-connection successful" )  
-            except socket.error:  
-                sleep(5) # Attempt to connect every 5 seconds  
+try:
+    connect()
+    print ("New Device ID: ", device_key)
 
-    except KeyboardInterrupt:
-        print("PROBLEM")
-        task_socket.close()
-        info_socket.close()
-        notif_socket.close()
+except socket.error:
+    # set connection status and recreate socket  
+    connected = False  
+    print( "connection lost... reconnecting" ) 
+
+    while not connected:
+        # attempt to reconnect, otherwise sleep for 2 seconds  
+        try:  
+            connect()
+            connected = True  
+            print( "re-connection successful" )  
+        except socket.error:  
+            sleep(5) # Attempt to connect every 5 seconds  
+
+except KeyboardInterrupt:
+    print("PROBLEM")
+    task_socket.close()
+    info_socket.close()
+    notif_socket.close()
