@@ -211,7 +211,7 @@ def connect():
     notif_server_thread.start()
     info_socket.connect((HOST, INFO_PORT))  # connect to the server
 
-if (__name__ == '__main__'):
+def start():
     task_socket = socket.socket()  # instantiate
     info_socket = socket.socket()  # instantiate
     notif_socket = socket.socket()  # instantiate
