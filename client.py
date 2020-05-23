@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from helper import voice
 from helper import input_control
+from time import sleep
 
 import speech_recognition as sr
 import threading
@@ -10,6 +11,8 @@ import config
 import socket
 import json
 import sys
+import admin_manager
+
 
 import asyncore
 import logging
@@ -20,6 +23,8 @@ r = sr.Recognizer()
 useVoice = False
 
 #arg = sys.argv[1]
+
+device = admin_manager.get_device_type()
 
 device_key = ''
 
@@ -33,6 +38,7 @@ logger = []
 HOST = "192.168.0.14"
 PORT = 65432
 INFO_PORT = 65433
+NOTIF_PORT = 65434 # Notification server
 
 info_socket = False
 
@@ -179,18 +185,59 @@ class RunTaskServer(threading.Thread):
 
             success, pro, struct = input_control.Process(message)
 
+class RunNotificationServer(threading.Thread):
+
+    def run(self):
+        global task_socket
+        
+        notif_socket.connect((HOST, NOTIF_PORT))  # connect to the server
+
+        raw_data = notif_socket.recv(1024)
+
+        newNotif = json.loads(raw_data)
+
+        if (newNotif['type'] == 'update'):
+            print("Updating and rebooting system")
+            if (device == 'Pi'):
+                # Only run update and reboot on Pi device (windows is only for debugging and programming)
+                print("Updating and rebooting system")
+                admin_manager.update_system()
+
+def connect():
+    task_server_thread = RunTaskServer(name = "Task-Server")
+    notif_server_thread = RunNotificationServer(name = "Notification-Server")
+    task_server_thread.start()
+    notif_server_thread.start()
+    info_socket.connect((HOST, INFO_PORT))  # connect to the server
 
 if (__name__ == '__main__'):
     task_socket = socket.socket()  # instantiate
     info_socket = socket.socket()  # instantiate
+    notif_socket = socket.socket()  # instantiate
+
+    task_server_thread = RunTaskServer(name = "Task-Server")
+    notif_server_thread = RunNotificationServer(name = "Notification-Server")
  
     try:
-        task_server_thread = RunTaskServer(name = "Task-Server")
-        task_server_thread.start()
-
-        info_socket.connect((HOST, INFO_PORT))  # connect to the server
-
+        connect()
         print ("New Device ID: ", device_key)
+
+    except socket.error:
+        # set connection status and recreate socket  
+        connected = False  
+        print( "connection lost... reconnecting" ) 
+
+        while not connected:
+            # attempt to reconnect, otherwise sleep for 2 seconds  
+            try:  
+                connect()
+                connected = True  
+                print( "re-connection successful" )  
+            except socket.error:  
+                sleep(5) # Attempt to connect every 5 seconds  
+
     except KeyboardInterrupt:
+        print("PROBLEM")
         task_socket.close()
         info_socket.close()
+        notif_socket.close()

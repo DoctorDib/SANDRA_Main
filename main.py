@@ -10,7 +10,6 @@ import socketserver
 import socket
 import json
 import config
-
 import asyncio
 import websockets
 
@@ -20,20 +19,20 @@ import time
 import asyncore
 import logging
 
+import admin_manager
+
 global server
 global info_server
 
-if (os.name == 'nt'):
-    device = 'Windows'
-    HOST = socket.gethostbyname(socket.gethostname())
-else:
-    from subprocess import check_output
-    device = 'Pi'
-    HOST = str(check_output(['hostname', '-I'])).split('\'')[1].split(' ')[0]
+device = admin_manager.get_device_type()
 
+HOST = admin_manager.get_ip(device)
 PORT = 65432
-WEB_PORT = 8765
 INFO_PORT = 65433
+NOTIF_PORT = 65434
+WEB_PORT = 8765
+
+open_connections = []
 
 #ID: False / True (based on if they're online)
 active_clients = {}
@@ -83,6 +82,33 @@ def handle_input(address, json_content):
     active_clients[clientID]['logger'] = clientLogger
     
     return (sendToAll, respond, type, stringMessage)
+
+def create_response(type, content):
+    return json.dumps({
+        'ID': 'MOTHER-SHIP',
+        'type': type,
+        'content': content
+    })
+
+def send_to_all(message):
+    for client in open_connections:
+        client.handle_write(message)
+
+def read_socket_request(data):
+    json_data = json.loads(data)
+
+    if (json_data['type'] == 'get-info'):
+        return create_response('data_response', active_clients)
+    if (json_data['type'] == 'update-sandra'):
+
+        message = create_response("update", "").encode('utf-8')
+
+        send_to_all(message)
+
+        if (device == 'Pi'):
+            admin_manager.update_system()
+        
+    return ('error')
 
 # Main tasks server
 class Server(asyncore.dispatcher):
@@ -171,6 +197,60 @@ class Socket_Server(threading.Thread):
         server = Server((HOST,PORT))    
         asyncore.loop()
 
+# Main tasks server
+class NotifServer(asyncore.dispatcher):
+    def __init__(self, address):
+        asyncore.dispatcher.__init__(self)
+        self.logger = logging.getLogger('NOTIFICATION_SERVER')
+        self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.set_reuse_addr()
+        self.bind(address)
+        self.address = self.socket.getsockname()
+        self.logger.debug('binding to %s', self.address)
+        self.listen(5)
+
+    def handle_accept(self):
+        # Called when a client connects to our socket
+        client_info = self.accept()
+        if client_info is not None:
+            self.logger.debug('handle_accept() -> %s', client_info[1])
+            newClient = NotifClientHandler(client_info[0], client_info[1])
+            open_connections.append(newClient)
+
+    def stop(self):
+        self.stop()
+        self.close()
+
+class NotifClientHandler(asyncore.dispatcher):
+    id = ''
+    device_address = ''
+
+    def __init__(self, sock, address):
+        global device_address
+        device_address = address
+        asyncore.dispatcher.__init__(self, sock)
+        self.logger = logging.getLogger('Client ' + str(address))
+        self.data_to_write = []
+
+    def writable(self):
+        return bool(self.data_to_write)
+
+    def handle_write(self, to_send):
+        sent = self.send(to_send)
+        
+        self.logger.debug('handle_write() -> (%d) "%s"', sent, "SUCCESS")
+
+    def handle_close(self):
+        self.logger.debug('handle_close()')
+        self.close()
+
+class Notif_Socket_Server(threading.Thread):
+    def run(self):
+        global server
+        logging.basicConfig(level=logging.DEBUG, format='%(name)s:[%(levelname)s]: %(message)s')
+        server = NotifServer((HOST,NOTIF_PORT))    
+        asyncore.loop()
+
 # Main web dashboard
 class Web_Server(threading.Thread):
     def run(self):
@@ -182,24 +262,6 @@ class Web_Server(threading.Thread):
         else:
             print("failed")
             # JavaScript is failed
-
-def create_response(type, content):
-    return json.dumps({
-        'ID': 'MOTHER-SHIP',
-        'type': type,
-        'content': content
-    })
-
-def read_socket_request(data):
-    json_data = json.loads(data)
-
-    if (json_data['type'] == 'get-info'):
-        return create_response('data_response', active_clients)
-    if (json_data['type'] == 'update-sandra' and device == 'Pi'):
-        os.system ("git pull")
-        os.system ("sudo reboot")
-        
-    return ('error')
 
 async def listen(websocket, path):
     async for message in websocket:
@@ -278,7 +340,6 @@ class InfoClientHandler(asyncore.dispatcher):
 
         self.handle_write(json.dumps({'type': 'validation', 'response': 'success'}).encode('utf-8'))
 
-
     def handle_close(self):
         self.close()
 
@@ -307,6 +368,10 @@ if (__name__ == '__main__'):
         web_socket_thread = WebSocket_Server(name = "WebSocket-Server") 
         web_socket_thread.setDaemon(True)
         web_socket_thread.start()
+
+        notif_server_thread = Notif_Socket_Server(name = "Notification-Server") 
+        notif_server_thread.setDaemon(True)
+        notif_server_thread.start()
 
         web_server_thread = Web_Server(name = "Website-Server") 
         web_server_thread.setDaemon(True)
