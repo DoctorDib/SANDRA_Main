@@ -106,7 +106,8 @@ def read_socket_request(data):
         send_to_all(message)
 
         if (device == 'Pi'):
-            admin_manager.update_system()
+            resposne = admin_manager.update_system(config.CONFIG['version'])
+            print(response)
         
     return ('error')
 

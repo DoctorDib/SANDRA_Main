@@ -200,8 +200,9 @@ class RunNotificationServer(threading.Thread):
             print("Updating and rebooting system")
             if (device == 'Pi'):
                 # Only run update and reboot on Pi device (windows is only for debugging and programming)
-                print("Updating and rebooting system")
-                admin_manager.update_system()
+                log("Updating and rebooting system")
+                response = admin_manager.update_system(config.CONFIG['version'])
+                log(response)
 
 def connect():
     task_server_thread = RunTaskServer(name = "Task-Server")

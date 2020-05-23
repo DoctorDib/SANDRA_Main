@@ -221,6 +221,15 @@ h1 {
     justify-content: center;
 }
 
+#updateButton {
+    background-color: #4b4bf7;
+}
+
+#updateButton:hover {
+    cursor: pointer;
+    background-color: #3c3ccc;
+}
+
 .active { background-color: green; }
 .disabled { background-color: #860707; }
 
