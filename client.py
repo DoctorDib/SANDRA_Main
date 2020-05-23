@@ -122,7 +122,7 @@ def handle_response(response):
         return
 
 def get_voice():
-    if (useVoice):
+    if (useVoice or device == 'Pi'):
         try: 
             # use the microphone as source for input. 
             with sr.Microphone() as source2: 
