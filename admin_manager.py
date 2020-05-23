@@ -19,7 +19,8 @@ def get_ip(type):
 def update_system(currentVerison):
     dir_path = os.path.dirname(os.path.realpath(__file__))
 
-    os.system('git -C ', dir_path, ' pull')
+    pullGit = ''.join(['git -C', dir_path, 'pull'])
+    os.system(pullGit)
 
     config.setup()
     newVersion = config.CONFIG['version']
