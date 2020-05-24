@@ -1,78 +1,127 @@
+from datetime import datetime
+import platform
 import subprocess
-import os
+ 
 
-#http://cagewebdev.com/raspberry-pi-showing-some-system-info-with-a-python-script/
-# Code has come from but has been updated for my sanity
-
-def get_ram():
+def index():
+    sys_data = {"current_time": '',"machine_name": ''}
     try:
-        s = subprocess.check_output(["free","-m"])
-        lines = s.split('\n')
-        return (int(lines[1].split()[1]), int(lines[2].split()[3]))
-    except:
-        return ("Failed", "Failed")
-        
-def get_process_count():
-    "Returns the number of processes"
+        sys_data['current_time'] = datetime.now().strftime("%d-%b-%Y , %I : %M : %S %p")
+        sys_data['machine_name'] = platform.node()
 
-    try:
-        s = subprocess.check_output(["ps","-e"])
-        return len(s.split('\n'))
-    except:
-        return "Failed"
-        
-def get_up_stats():
+        #cpu_genric_info = cpu_generic_details()
+        disk_usage_info = disk_usage_list()
+        running_process_info = running_process_list()
 
-    try:
-        s = subprocess.check_output(["uptime"])
-        load_split = s.split('load average: ')
-        load_five = float(load_split[1].split(',')[1])
-        up = load_split[0]
-        up_pos = up.rfind(',', 0, len(up) - 4)
-        up = up[:up_pos].split('up ')[1]
-        return (up , load_five)
-    except:
-        return ("Failed", "Failed")
-        
-def get_connections():
+        print("CPU Generic Info: ", cpu_generic_details())
+        print("CPU Temperature: ", cpu_temperature())
 
-    try:
-        s = subprocess.check_output(["netstat", "-tun"])
-        return len([x for x in s.split() if x == 'ESTABLISHED'])
-    except:
-        return "Failed"
-        
-def get_temperature():
+        print("Disk Usage Info: ", disk_usage_info)
+        print("Running Process Info: ", running_process_info)
+        print("Boot Info: ", boot_info())
+        print("Memory Usage Info: ", memory_usage_info())
+        print("OS Name: ", os_name())
 
-    try:
-        s = subprocess.check_output(["/opt/vc/bin/vcgencmd","measure_temp"])
-        return float(s.split('=')[1][:-3])
-    except:
-        return "Failed"
-        
-def get_ipaddress():
-    try:
-        arg =' ip route list'
-        p = subprocess.Popen(arg, shell=True, stdout=subprocess.PIPE)
-        data = p.communicate()
-        split_data = data[0].split()
-        ipaddr = split_data[split_data.index('src') + 1]
-        return ipaddr
-    except:
-        return "Failed"
+    except Exception as ex:
+        print (ex)
 
-def get_cpu_speed():
+def cpu_generic_details():
     try:
-        f = os.popen('/opt/vc/bin/vcgencmd get_config arm_freq')
-        cpu = f.read()
-        return cpu
-    except:
-        return "Failed"
+        items = [s.split('\t: ') for s in subprocess.check_output(["cat /proc/cpuinfo  | grep 'model name\|Hardware\|Serial' | uniq "], shell=True).splitlines()]
+    except Exception as ex:
+        print (ex)
+    finally:
+        return items
 
-print ('Free RAM: ', str(get_ram()[1]), ' (', str(get_ram()[0]), ')')
-print ('Nr. of processes: ', str(get_process_count()))
-print ('Up time: ', get_up_stats()[0])
-print ('Nr. of connections: ', str(get_connections()))
-print ('Temperature in C: ' , str(get_temperature()))
-print ('IP-address: ', get_ipaddress())
-print ('CPU speed: ', str(get_cpu_speed()))
+
+def boot_info():
+    item = {'start_time': 'Na','running_since':'Na'}
+    try:
+        item['running_duration'] = subprocess.check_output(['uptime -p'], shell=True)
+        item['start_time'] = subprocess.check_output(['uptime -s'], shell=True)
+    except Exception as ex:
+        print (ex)
+    finally:
+        return dict(boot_info = item)
+
+
+def memory_usage_info():
+    try:
+        item = {'total': 0,'used': 0,'available': 0 }
+        item['total']=  subprocess.check_output(["free -m -t | awk 'NR==2' | awk '{print $2'}"], shell=True)
+        item['used']=  subprocess.check_output(["free -m -t | awk 'NR==3' | awk '{print $3'}"], shell=True)
+        item['available']= int(item['total'])- int(item['used'])
+    except Exception as ex:
+        print (ex)
+    finally:
+        return dict(memory_usage_info = item)
+
+
+def os_name():
+    os_info = subprocess.check_output("cat /etc/*-release | grep PRETTY_NAME | cut -d= -f2", shell=True).replace('\"', '')
+    return dict(os_name=os_info)
+
+
+def cpu_usage_info():
+    item = {'in_use': 0}
+    try:
+        item['in_use'] = subprocess.check_output("top -b -n2 | grep 'Cpu(s)'|tail -n 1 | awk '{print $2 + $4 }'", shell=True)
+    except Exception as ex:
+        print (ex)
+    finally:
+        return dict(cpu_usage_info = item)
+
+
+def cpu_processor_count():
+    proc_info = subprocess.check_output("nproc", shell=True).replace('\"', '')
+    return dict(cpu_processor_count=proc_info)
+
+
+def cpu_core_frequency():
+    core_frequency = subprocess.check_output("vcgencmd get_config arm_freq | cut -d= -f2", shell=True).replace('\"', '')
+    return dict(cpu_core_frequency=core_frequency)
+
+
+def cpu_core_volt():
+    core_volt = subprocess.check_output("vcgencmd measure_volts| cut -d= -f2", shell=True).replace('\"', '')
+    return dict(cpu_core_volt=core_volt)
+
+
+def cpu_temperature():
+    cpuInfo = {'temperature': 0, 'color': 'white'}
+    try:
+        cpuTemp = float(subprocess.check_output(["vcgencmd measure_temp"], shell=True).split('=')[1].split('\'')[0])
+        cpuInfo['temperature']=cpuTemp
+        if cpuTemp > 40 and cpuTemp < 50:
+            cpuInfo['color'] = 'orange'
+        elif cpuTemp > 50:
+            cpuInfo['color'] = 'red'
+        return cpuInfo
+    except Exception as ex:
+        print (ex)
+    finally:
+        return dict(cpu_temperature=cpuInfo)
+
+def disk_usage_list():
+    try:
+        items = [s.split() for s in subprocess.check_output(['df', '-h'], universal_newlines=True).splitlines()]
+    except Exception as ex:
+        print (ex)
+    finally:
+        return items[1:]
+
+def running_process_list():
+    try:
+        items = [s.split() for s in subprocess.check_output(["ps -Ao user,pid,pcpu,pmem,comm,lstart --sort=-pcpu"], shell=True).splitlines()]
+    except Exception as ex:
+        print (ex)
+    finally:
+        return items[1:]
+
+def utility_processor():
+    def short_date(a,b,c):
+        return u'{0}{1}, {2}'.format(a, b,c)
+    return dict(short_date=short_date)
+
+
+index()
