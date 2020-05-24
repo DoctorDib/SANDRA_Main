@@ -5,9 +5,9 @@ from tasks import greet_part_handler
 
 import pickle
 import os
+import config
 
-dir_path = os.path.dirname(os.path.realpath(__file__))
-f =open(os.path.join(dir_path, 'models/recognition.pickle', 'rb')
+f =open(os.path.join(config.CONFIG["directory"]["main"], 'models/recognition.pickle'), 'rb')
 classifier = pickle.load(f)
 
 def ProcessTask(req, pro, input):

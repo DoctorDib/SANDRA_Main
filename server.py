@@ -46,8 +46,6 @@ print("DEVICE: ", device)
 print("========================================")
 
 def setup():
-    config.setup()
-
     active_clients["server"] = {
         "version": config.CONFIG["version"]
     }
@@ -256,7 +254,7 @@ class Notif_Socket_Server(threading.Thread):
 class Web_Server(threading.Thread):
     def run(self):
         print("Starting up webserver")
-        result = execute_js('./website/server.js')
+        result = execute_js(os.path.join(config.CONFIG["directory"]["main"],'website/server.js'))
         if result:
             print("Done website")
             # JavaScript is successfully executed

@@ -1,5 +1,8 @@
 import socket
 import sys
+import config
+
+config.setup()
 
 if (len(sys.argv) > 1):
     print(sys.argv[1])

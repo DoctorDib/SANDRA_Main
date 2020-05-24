@@ -22,8 +22,12 @@
     },
 
     "log": {
-        "max_limit": 10
+        "max_limit": 50
     },
 
-    "version": "0.3.5"
+    "directory": {
+        "main": ""
+    },
+
+    "version": "0.4.5"
 }
