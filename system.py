@@ -34,19 +34,27 @@ def get_throttled():
     if (response == "Error"):
         return response
 
-    print(">>", response)
+    throttled = int(run_command("get_throttled"), 16)
 
-    throttled_binary = bin(int(run_command("get_throttled"), 0))
+    throttling_occurred = (throttled & 0x40000) >> 18
+    arm_frequency_capped_occurred = (throttled & 0x20000) >> 17
+    under_voltage_occurred = (throttled & 0x10000) >> 16
+    currently_throttled = (throttled & 0x4) >> 2
+    arm_frequency_capped = (throttled & 0x2) >> 1
+    under_voltage = (throttled & 0x1)
 
-    warnings = 0
-    message = ""
-    for position, message in VOLTAGE_MESSAGE.iteritems():
-        # Check for the binary digits to be "on" for each warning message
-        if len(throttled_binary) > position and throttled_binary[0 - position - 1] == '1':
-            print(message)
-            warnings += 1
+    results = {
+        'throttling_occurred': throttling_occurred,
+        'arm_frequency_capped_occurred': arm_frequency_capped_occurred,
+        'under_voltage_occurred': under_voltage_occurred,
+        'currently_throttled': currently_throttled,
+        'arm_frequency_capped': arm_frequency_capped,
+        'under_voltage': under_voltage,
+    }
 
-    return dict(cpu_core_frequency=message)
+    print(results)
+
+    return dict(cpu_core_frequency=results)
 
 
 throttle = get_throttled()
