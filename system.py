@@ -27,6 +27,8 @@ def run_command(command):
     finally:
         return response
 
+# TASKS
+
 def get_power_condition():
      results = []
 
@@ -58,13 +60,53 @@ def get_power_condition():
 
     print(results)
 
-    return dict(cpu_core_frequency=results)
+    return results
 
 def get_measure():
-    temp = run_command("measure_temp")
+    # Getting current temp of pi
+    return run_command("measure_temp")
 
+def get_volts():
+    # Getting current volts of pi
+    return run_command("measure_volts core")
+
+def get_mem(type):
+    return run_command("get_mem " + type)
+
+def get_number_of_oom():
+    # Getting number of out of memory events
+    return run_command("mem_oom")
+
+def get_hertz(type):
+    hertz = run_command("measure_clock " + type)
+
+    return (hertz * 0.000001) + " MHz"
+
+## INPUTS
 throttle = get_power_condition()
 print(throttle)
 
 temperature = get_measure()
 print(temperature)
+
+memory_of_arm = get_mem("arm")
+print("Memory of arm: ", memory_of_arm)
+
+memory_of_gpu = get_mem("gpu")
+print("Memory of GPU: ", memory_of_gpu)
+
+# Graphics 
+arm_hert = get_hertz("arm")
+print("ARM: ", arm_hert)
+
+# Core
+core_hert = get_hertz("core")
+print("Core: ", core_hert)
+
+# Audio
+pwm_hert = get_hertz("pwm")
+print("Audio: ", pwm_hert)
+
+# SD
+emmc_hert = get_hertz("emmc")
+print("SD: ", emmc_hert)
