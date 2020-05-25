@@ -30,12 +30,12 @@ def run_command(command):
 # TASKS
 
 def get_power_condition():
-     results = []
+    results = []
 
     throttled = int(run_command("get_throttled"), 16)
 
-    if (response == "Error"):
-        return response
+    if (throttled == "Error"):
+        return throttled
 
     # SOLUTION
     #https://gist.github.com/fernandog/d330f87b19c2ace350110cb697504fc2
