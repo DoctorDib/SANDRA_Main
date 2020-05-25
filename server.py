@@ -335,7 +335,8 @@ class InfoClientHandler(asyncore.dispatcher):
         #try:
         recieved = json.loads(data)
 
-        active_clients[recieved['ID']] = recieved
+        active_clients[recieved['ID']]['logger'] = recieved['logger']
+        active_clients[recieved['ID']]['specs'] = recieved['specs']
 
         self.handle_write(json.dumps({'type': 'validation', 'response': 'success'}).encode('utf-8'))
 

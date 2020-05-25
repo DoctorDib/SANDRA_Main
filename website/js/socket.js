@@ -33,7 +33,7 @@ const connect = () => {
         ChangeServerStat(true);
     }
 
-    // solution
+    // Solution
     // https://stackoverflow.com/questions/22431751/websocket-how-to-automatically-reconnect-after-it-dies
     websocket.onclose = (e) => {
         console.log('Socket is closed. Reconnect will be attempted in 1 second.', e.reason);

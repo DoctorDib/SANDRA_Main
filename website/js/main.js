@@ -3,7 +3,7 @@ let infoClient = '';
 let active_clients = {}
 
 const element_template = (name, data) => {
-    let element = document.getElementById(client);
+    console.log(data)
 
     let insert = 
     `<section onclick='load_info("${ name }", true)' id='${ name }' class='device'>

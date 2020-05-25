@@ -1,6 +1,8 @@
 from datetime import datetime
+from subprocess import check_output
+from re import findall
 import platform
-import subprocess
+import psutil
 
 def run_command(command):
     response = ""
@@ -15,6 +17,12 @@ def run_command(command):
         response = "Error"
     finally:
         return response
+
+def bytes_to_megabytes(inputDict):
+    for key in inputDict:
+        inputDict[key] = (inputDict[key] * 0.000001)
+
+    return inputDict
 
 # TASKS
 
@@ -36,40 +44,30 @@ def get_power_condition():
         "under_voltage": (throttled & 0x1)
     }
 
-def get_temperature():
-    # Getting current temp of pi
-    return run_command("measure_temp")
+def get_temp():
+    temp = check_output(["vcgencmd","measure_temp"]).decode("UTF-8")
+    return(findall("\d+\.\d+",temp)[0])
 
-def get_volts():
-    # Getting current volts of pi
-    return run_command("measure_volts core")
+def get_disk_usage():
+    return bytes_to_megabytes(psutil.disk_usage('/'))
 
-def get_mem(type):
-    return run_command("get_mem " + type)
+def get_memory_usage():
+    return bytes_to_megabytes(psutil.virtual_memory())
 
-def get_number_of_oom():
-    # Getting number of out of memory events
-    return run_command("mem_oom")
+def get_swap_memory_usage():
+    return bytes_to_megabytes(psutil.sqap_memory())
 
-def get_hertz(type):
-    hertz = run_command("measure_clock " + type)
-
-    return float(hertz) * 0.000001
-
+def get_cpu_usage():
+    return str(psutil.cpu_percent(interval=None))
 
 # Getting the specs
 def get_system_specs():
     return {
         "power_condition": get_power_condition(),
-        "temperature": get_temperature(),
-        "memory": {
-            "arm": get_mem("arm"),
-            "gpu": get_mem("gpu")
-        },
-        "mherz": {
-            "arm": get_hertz("arm"),
-            "core": get_hertz("core"),
-            "pwm": get_hertz("pwn"),
-            "emmc": get_hertz("emmc")
-        }
+        "temperature": get_temp(),
+        "disk_usage": get_disk_usage(),
+        "memory_usage": get_memory_usage(),
+        "swap_memory_usage": get_swap_memory_usage(),
+        "cpu_usage": get_cpu_usage()    
     }
+    
