@@ -21,6 +21,9 @@ def run_command(command):
 
 def bytes_to_megabytes(inputDict):
     print(inputDict)
+
+    test = {key:value for key, value in A.__dict__.items() if not key.startswith('__') and not callable(key)}
+
     for key, val in inputDict:
         print(key)
         inputDict[key] = (float(val) * 0.000001)
