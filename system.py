@@ -17,7 +17,8 @@ def run_command(command):
     response = ""
 
     try:
-        response =  subprocess.check_output("vcgencmd ", command, shell=True)
+        response =  subprocess.check_output("vcgencmd " +command, shell=True)
+        response = response.split('=')[1].split('\n')[0]
     except Exception as error:
         print(error)
 
