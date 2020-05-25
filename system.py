@@ -20,43 +20,51 @@ def run_command(command):
 
     try:
         response =  subprocess.check_output(command, shell=True)
-        response = response.split('=')[1].split('\\n')[0]
+        response = str(response).split('=')[1].split('\\n')[0]
     except Exception as error:
         print(error)
-
         response = "Error"
     finally:
         return response
 
-def get_throttled():
-    response = run_command("get_throttled")
+def get_power_condition():
+     results = []
+
+    throttled = int(run_command("get_throttled"), 16)
 
     if (response == "Error"):
         return response
 
-    throttled = int(run_command("get_throttled"), 16)
+    # SOLUTION
+    #https://gist.github.com/fernandog/d330f87b19c2ace350110cb697504fc2
 
-    throttling_occurred = (throttled & 0x40000) >> 18
-    arm_frequency_capped_occurred = (throttled & 0x20000) >> 17
-    under_voltage_occurred = (throttled & 0x10000) >> 16
-    currently_throttled = (throttled & 0x4) >> 2
-    arm_frequency_capped = (throttled & 0x2) >> 1
-    under_voltage = (throttled & 0x1)
+    if ((throttled & 0x40000) >> 18):
+        results.append("throttling_occurred")
 
-    results = {
-        'throttling_occurred': throttling_occurred,
-        'arm_frequency_capped_occurred': arm_frequency_capped_occurred,
-        'under_voltage_occurred': under_voltage_occurred,
-        'currently_throttled': currently_throttled,
-        'arm_frequency_capped': arm_frequency_capped,
-        'under_voltage': under_voltage,
-    }
+    if ((throttled & 0x20000) >> 17):
+        results.append("arm_frequency_capped_occurred")
+
+    if ((throttled & 0x10000) >> 16):
+        results.append("under_voltage_occurred")
+
+    if ((throttled & 0x4) >> 2):
+        results.append("currently_throttled")
+
+    if ((throttled & 0x2) >> 1):
+        results.append("arm_frequency_capped")
+
+    if ((throttled & 0x1)):
+        results.append("under_voltage")
 
     print(results)
 
     return dict(cpu_core_frequency=results)
 
+def get_measure():
+    temp = run_command("measure_temp")
 
-throttle = get_throttled()
-
+throttle = get_power_condition()
 print(throttle)
+
+temperature = get_measure()
+print(temperature)
