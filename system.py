@@ -80,7 +80,7 @@ def get_number_of_oom():
 def get_hertz(type):
     hertz = run_command("measure_clock " + type)
 
-    return float(hertz) * 0.000001 + " MHz"
+    return str(float(hertz) * 0.000001) + " MHz"
 
 ## INPUTS
 throttle = get_power_condition()
