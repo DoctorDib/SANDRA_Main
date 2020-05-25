@@ -20,8 +20,10 @@ def run_command(command):
         return response
 
 def bytes_to_megabytes(inputDict):
+    print(inputDict)
     for key in inputDict:
-        inputDict[key] = (inputDict[key] * 0.000001)
+        print(key)
+        inputDict[key] = (float(inputDict[key]) * 0.000001)
 
     return inputDict
 
