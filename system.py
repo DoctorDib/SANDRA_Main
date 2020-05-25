@@ -20,12 +20,10 @@ def run_command(command):
         return response
 
 def bytes_to_megabytes(inputDict):
-    print(inputDict)
-
-    test = {key:value for key, value in A.__dict__.items() if not key.startswith('__') and not callable(key)}
-
+    
     for key, val in inputDict:
         print(key)
+        print(val)
         inputDict[key] = (float(val) * 0.000001)
 
     return inputDict
@@ -55,13 +53,44 @@ def get_temp():
     return(findall("\d+\.\d+",temp)[0])
 
 def get_disk_usage():
-    return bytes_to_megabytes(psutil.disk_usage('/'))
+    results = psutil.disk_usage('/')
+    results = {
+        "total": results.total,
+        "used": results.used,
+        "free": results.free,
+        "percent": results.percent
+    }
+
+    return bytes_to_megabytes(results)
 
 def get_memory_usage():
-    return bytes_to_megabytes(psutil.virtual_memory())
+    results = psutil.virtual_memory()
+    results = {
+        "total": results.total,
+        "available": results.available,
+        "percent": results.percent,
+        "used": results.used,
+        "free": results.free,
+        "active": results.active,
+        "inactive": results.inactive,
+        "buffers": results.buffers,
+        "cached": results.cached,
+        "shared": results.shared,
+    }
+    return bytes_to_megabytes(results)
 
 def get_swap_memory_usage():
-    return bytes_to_megabytes(psutil.sqap_memory())
+    results = psutil.swap_memory()
+    results = {
+        "total": results.total,
+        "used": results.used,
+        "free": results.free,
+        "percent": results.percent,
+        "sin": results.sin,
+        "sout": results.sout
+    }
+
+    return bytes_to_megabytes(results)
 
 def get_cpu_usage():
     return str(psutil.cpu_percent(interval=None))
