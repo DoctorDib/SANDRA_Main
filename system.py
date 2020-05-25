@@ -20,11 +20,13 @@ def run_command(command):
         return response
 
 def bytes_to_megabytes(inputDict):
-    
-    for key, val in inputDict:
-        print(key)
-        print(val)
-        inputDict[key] = (float(val) * 0.000001)
+    for key in inputDict:
+        # Skipping percentage
+        if (key == "percentage"):
+            continue
+
+        # "%.2f" rounding to two decimal places
+        inputDict[key] = "%.2f" % (float(inputDict[key]) * 0.000001)
 
     return inputDict
 
