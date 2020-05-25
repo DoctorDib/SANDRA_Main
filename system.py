@@ -21,9 +21,9 @@ def run_command(command):
 
 def bytes_to_megabytes(inputDict):
     print(inputDict)
-    for key in inputDict:
+    for key, val in inputDict:
         print(key)
-        inputDict[key] = (float(inputDict[key]) * 0.000001)
+        inputDict[key] = (float(val) * 0.000001)
 
     return inputDict
 
