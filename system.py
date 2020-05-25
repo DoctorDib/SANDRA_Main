@@ -3,6 +3,7 @@ from subprocess import check_output
 from re import findall
 import platform
 import psutil
+import subprocess
 
 def run_command(command):
     response = ""
