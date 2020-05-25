@@ -16,9 +16,11 @@ VOLTAGE_MESSAGE = {
 def run_command(command):
     response = ""
 
+    command = "vcgencmd " + command
+
     try:
-        response =  subprocess.check_output("vcgencmd " +command, shell=True)
-        response = response.split('=')[1].split('\n')[0]
+        response =  subprocess.check_output(command, shell=True)
+        response = response.split('=')[1].split('\\n')[0]
     except Exception as error:
         print(error)
 
@@ -34,7 +36,7 @@ def get_throttled():
 
     print(">>", response)
 
-    throttled_binary = bin(int(run_command("get_throttled").split('=')[1], 0))
+    throttled_binary = bin(int(run_command("get_throttled"), 0))
 
     warnings = 0
     message = ""
