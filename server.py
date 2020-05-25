@@ -196,7 +196,7 @@ class Socket_Server(threading.Thread):
         server = Server((HOST,PORT))    
         asyncore.loop()
 
-# Main tasks server
+# Server to Client communication
 class NotifServer(asyncore.dispatcher):
     def __init__(self, address):
         asyncore.dispatcher.__init__(self)
@@ -279,7 +279,7 @@ class WebSocket_Server(threading.Thread):
 
         print("finished")
 
-# Information updater from client
+# Client to Server communication
 class Info_Server(asyncore.dispatcher):
     def __init__(self, address):
         asyncore.dispatcher.__init__(self)
@@ -335,7 +335,7 @@ class InfoClientHandler(asyncore.dispatcher):
         #try:
         recieved = json.loads(data)
 
-        active_clients[recieved['ID']]['logger'] = recieved['logger']
+        active_clients[recieved['ID']] = recieved
 
         self.handle_write(json.dumps({'type': 'validation', 'response': 'success'}).encode('utf-8'))
 

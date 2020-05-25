@@ -12,6 +12,7 @@ import socket
 import json
 import sys
 import admin_manager
+import system
 
 import asyncore
 import logging
@@ -20,8 +21,6 @@ global task_socket
 
 r = sr.Recognizer()  
 useVoice = False
-
-#arg = sys.argv[1]
 
 device = admin_manager.get_device_type()
 
@@ -74,7 +73,8 @@ def send_info_update():
     if (info_socket):
         json_content = {
             'ID': device_key,
-            'logger': logger
+            'logger': logger,
+            'specs': system.get_system_specs()
         }
 
         to_send = json.dumps(json_content).encode('utf-8')

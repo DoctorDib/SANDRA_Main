@@ -2,17 +2,6 @@ from datetime import datetime
 import platform
 import subprocess
 
-VOLTAGE_MESSAGE = {
-    0: 'Under-voltage!',
-    1: 'ARM frequency capped!',
-    2: 'Currently throttled!',
-    3: 'Soft temperature limit active',
-    16: 'Under-voltage has occurred since last reboot.',
-    17: 'Throttling has occurred since last reboot.',
-    18: 'ARM frequency capped has occurred since last reboot.',
-    19: 'Soft temperature limit has occurred'
-}
-
 def run_command(command):
     response = ""
 
@@ -30,8 +19,6 @@ def run_command(command):
 # TASKS
 
 def get_power_condition():
-    results = []
-
     throttled = int(run_command("get_throttled"), 16)
 
     if (throttled == "Error"):
@@ -40,29 +27,16 @@ def get_power_condition():
     # SOLUTION
     #https://gist.github.com/fernandog/d330f87b19c2ace350110cb697504fc2
 
-    if ((throttled & 0x40000) >> 18):
-        results.append("throttling_occurred")
+    return {
+        "throttling_occurred": (throttled & 0x40000) >> 18,
+        "arm_frequency_capped_occurred": (throttled & 0x20000) >> 17,
+        "under_voltage_occurred": (throttled & 0x10000) >> 16,
+        "currently_throttled": (throttled & 0x4) >> 2,
+        "arm_frequency_capped": (throttled & 0x2) >> 1,
+        "under_voltage": (throttled & 0x1)
+    }
 
-    if ((throttled & 0x20000) >> 17):
-        results.append("arm_frequency_capped_occurred")
-
-    if ((throttled & 0x10000) >> 16):
-        results.append("under_voltage_occurred")
-
-    if ((throttled & 0x4) >> 2):
-        results.append("currently_throttled")
-
-    if ((throttled & 0x2) >> 1):
-        results.append("arm_frequency_capped")
-
-    if ((throttled & 0x1)):
-        results.append("under_voltage")
-
-    print(results)
-
-    return results
-
-def get_measure():
+def get_temperature():
     # Getting current temp of pi
     return run_command("measure_temp")
 
@@ -80,33 +54,22 @@ def get_number_of_oom():
 def get_hertz(type):
     hertz = run_command("measure_clock " + type)
 
-    return str(float(hertz) * 0.000001) + " MHz"
+    return float(hertz) * 0.000001
 
-## INPUTS
-throttle = get_power_condition()
-print(throttle)
 
-temperature = get_measure()
-print(temperature)
-
-memory_of_arm = get_mem("arm")
-print("Memory of arm: ", memory_of_arm)
-
-memory_of_gpu = get_mem("gpu")
-print("Memory of GPU: ", memory_of_gpu)
-
-# Graphics 
-arm_hert = get_hertz("arm")
-print("ARM: ", arm_hert)
-
-# Core
-core_hert = get_hertz("core")
-print("Core: ", core_hert)
-
-# Audio
-pwm_hert = get_hertz("pwm")
-print("Audio: ", pwm_hert)
-
-# SD
-emmc_hert = get_hertz("emmc")
-print("SD: ", emmc_hert)
+# Getting the specs
+def get_system_specs():
+    return {
+        "power_condition": get_power_condition(),
+        "temperature": get_temperature(),
+        "memory": {
+            "arm": get_mem("arm"),
+            "gpu": get_mem("gpu")
+        },
+        "mherz": {
+            "arm": get_hertz("arm"),
+            "core": get_hertz("core"),
+            "pwm": get_hertz("pwn"),
+            "emmc": get_hertz("emmc")
+        }
+    }
