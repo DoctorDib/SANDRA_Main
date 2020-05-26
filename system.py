@@ -22,7 +22,7 @@ def run_command(command):
 def bytes_to_megabytes(inputDict):
     for key in inputDict:
         # Skipping percentage
-        if (key == "percentage"):
+        if (key == "percent"):
             inputDict[key] = float(inputDict[key])
             continue
 
