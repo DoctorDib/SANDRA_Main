@@ -23,10 +23,11 @@ def bytes_to_megabytes(inputDict):
     for key in inputDict:
         # Skipping percentage
         if (key == "percentage"):
+            inputDict[key] = float(inputDict[key])
             continue
 
         # "%.2f" rounding to two decimal places
-        inputDict[key] = "%.2f" % (float(inputDict[key]) * 0.000001)
+        inputDict[key] = float("%.2f" % (float(inputDict[key]) * 0.000001))
 
     return inputDict
 

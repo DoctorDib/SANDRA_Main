@@ -4,6 +4,7 @@
         <title> SANDRA - Dashboard </title>
         <meta charset="utf-8"/>
         <link rel="stylesheet" type="text/css" href="css/style.css">
+        <link rel="stylesheet" type="text/css" href="css/graph.css">
         <script src="js/main.js"></script> 
         <script src="js/socket.js"></script> 
     </head>
@@ -28,9 +29,7 @@
                             </section> 
                         </section>
 
-                        <section class="versionParent"> 
-                            Version: <section id="version"> error </section> 
-                        </section>
+                        <section class="versionParent"> Version: <section id="version"> error </section> </section>
 
                         <!-- Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a> -->
                         <!-- <div>Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div> -->
@@ -39,9 +38,65 @@
 
                 <section id="rightSide">
                     <section id="detailsParent" class="hide">
-                        <section id='detailsTitleContainer'>
-                            <h1 id='detailsName'> Log </h1>
-                            <h1 id='detailsIP'> Log </h1>
+                        <section id="main_details">
+                            <section id='detailsTitleContainer'>
+                                <h1 id='detailsName'> Template Name </h1>
+                                <h1 id='detailsIP'> Template UP </h1>
+                            </section>
+                            
+                            <section id='graphs_parent'>
+                                <section class='graph_container'>
+                                    <section id='virtual_memory' class="circle-chart-container">
+                                        <svg viewbox="0 0 33.83098862 33.83098862" xmlns="http://www.w3.org/2000/svg">
+                                            <circle stroke="#efefef" stroke-width=".5" fill="none" cx="16.91549431" cy="16.91549431" r="14.915" />
+                                            <circle class="circle-chart-circle" stroke="black" stroke-width="3" fill="none" cx="16.91549431" cy="16.91549431" r="14.915" />
+                                        </svg>
+                                        <span class="circle-chart-percentage">
+                                            <section class="text"> null </section>
+                                        </span>
+                                    </section>
+                                    <section class="circle-title"> Virtual Memory </section>
+                                </section>
+                                
+                                <section class='graph_container'>
+                                    <section id='swap_memory' class="circle-chart-container">
+                                        <svg viewbox="0 0 33.83098862 33.83098862" xmlns="http://www.w3.org/2000/svg">
+                                            <circle stroke="#efefef" stroke-width=".5" fill="none" cx="16.91549431" cy="16.91549431" r="14.915" />
+                                            <circle class="circle-chart-circle" stroke="#005700" stroke-width="3" fill="none" cx="16.91549431" cy="16.91549431" r="14.915" />
+                                        </svg>
+                                        <span class="circle-chart-percentage">
+                                            <section class="text"> null </section>
+                                        </span>
+                                    </section>
+                                    <section class="circle-title"> Swap Memory </section>
+                                </section>
+
+                                <section class='graph_container'> 
+                                    <section id='disk_usage' class="circle-chart-container">
+                                        <svg viewbox="0 0 33.83098862 33.83098862" xmlns="http://www.w3.org/2000/svg">
+                                            <circle stroke="#efefef" stroke-width=".5" fill="none" cx="16.91549431" cy="16.91549431" r="14.915" />
+                                            <circle class="circle-chart-circle" stroke="#570000" stroke-width="3" fill="none" cx="16.91549431" cy="16.91549431" r="14.915" />
+                                        </svg>
+                                        <span class="circle-chart-percentage">
+                                            <section class="text"> null </section>
+                                        </span>
+                                    </section>
+                                    <section class="circle-title"> Disk Usage </section>
+                                </section>
+
+                                <section class='graph_container'>
+                                    <section id='cpu_usage' class="circle-chart-container">
+                                        <svg viewbox="0 0 33.83098862 33.83098862" xmlns="http://www.w3.org/2000/svg">
+                                            <circle stroke="#efefef" stroke-width=".5" fill="none" cx="16.91549431" cy="16.91549431" r="14.915" />
+                                            <circle class="circle-chart-circle" stroke="#111cbb" stroke-width="3" fill="none" cx="16.91549431" cy="16.91549431" r="14.915" />
+                                        </svg>
+                                        <span class="circle-chart-percentage">
+                                            <section class="text"> null </section>
+                                        </span>
+                                    </section>
+                                    <section class="circle-title"> CPU Usage </section>
+                                </section>
+                            </section>
                         </section>
 
                         <section>
